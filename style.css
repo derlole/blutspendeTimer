@@ -1,0 +1,130 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background: #2c2c2c;
+}
+
+#menu {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #444;
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 1000;
+}
+
+#menu button {
+    display: block;
+    margin-bottom: 6px;
+    width: 120px;
+    cursor: pointer;
+}
+
+#workspace {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: #3a3a3a;
+}
+
+#table {
+    position: absolute;
+    width: 700px;
+    height: 360px;
+    background: #666;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    text-align: center;
+    line-height: 180px;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.element {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: #aaa;
+    border-radius: 6px;
+    cursor: grab;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+}
+
+.element.bed {
+    width: 100px;
+    height: 250px;
+    background: #8aa;
+}
+
+.element .timer {
+    font-size: 12px;
+    margin-top: 4px;
+    color: #222;
+    background: rgba(255,255,255,0.85);
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.element .label {
+    font-size: 16px;
+    padding: 2px 6px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 6px;
+    cursor: text;
+}
+
+.element .label-edit {
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    border: 1px solid #888;
+    width: 80px;
+}
+
+.element .controls {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.element .controls button {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.element.running {
+    box-shadow: 0 0 10px rgba(0,200,0,0.6);
+    background: #bfeec0;
+}
+
+.element.alert {
+    background: red;
+    animation: blink 1s infinite;
+    color: white;
+}
+
+.element.alert {
+    background: red;
+    animation: blink 1s infinite;
+}
+
+.element button {
+    font-size: 10px;
+    margin-top: 2px;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
