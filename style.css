@@ -38,7 +38,7 @@ body {
     transform: translate(-50%, -50%);
     border-radius: 10px;
     text-align: center;
-    line-height: 180px;
+    line-height: 30px;
     font-weight: bold;
     pointer-events: none;
 }
@@ -164,7 +164,7 @@ body {
     top: 10px;
     left: 10px;
     width: 250px;
-    height: calc(100vh - 10px - 100px); /* Footer berücksichtigen */
+    height: calc(100vh - 10px - 120px); /* Footer berücksichtigen */
     background: #2a2a2a;
     color: #ddd;
     padding: 10px;
