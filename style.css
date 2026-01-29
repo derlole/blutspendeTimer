@@ -128,3 +128,63 @@ body {
     50% { opacity: 0.4; }
     100% { opacity: 1; }
 }
+/* Footer */
+#footer {
+    position: fixed;       /* Immer unten anzeigen */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #444;      /* Passend zum Menü */
+    color: #000000;
+    text-align: center;
+    font-size: 0.9em;
+    padding: 8px 0;
+    border-top: 1px solid #666;
+    z-index: 999;
+}
+#footer p {
+    margin: 5px;
+    padding: 0;
+    color: #ffffff;
+}
+
+#footer a {
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+}
+
+#footer a:hover {
+    text-decoration: underline;
+}
+/* Log-Spalte */
+#log {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 250px;
+    height: calc(100vh - 10px - 100px); /* Footer berücksichtigen */
+    background: #2a2a2a;
+    color: #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    z-index: 900;
+    display: flex;
+    flex-direction: column; /* Wichtig */
+}
+
+#log h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1em;
+    text-align: center;
+    color: #fff;
+    flex: 0 0 auto; /* Header bleibt fix */
+}
+
+#logContent {
+    flex: 1 1 auto;      /* Nimmt verbleibenden Platz ein */
+    overflow-y: auto;    /* Scrollen aktivieren */
+}
+
+

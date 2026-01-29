@@ -1,4 +1,6 @@
- (function(){
+var defaultTableExecuted = false;
+
+(function(){
     let seatCount = 0;
     const workspace = () => document.getElementById('workspace');
     const table = () => document.getElementById('table');
@@ -9,6 +11,7 @@
         el.className = 'element' + (type === 'bed' ? ' bed' : '');
         el.dataset.type = type;
         el.dataset.id = seatCount;
+        logMessage(`Erstellt: ${type} (ID ${seatCount})`);
 
         // label (editable)
         const label = document.createElement('div');
@@ -78,8 +81,10 @@
 
         delBtn.addEventListener('click', function(e){
             e.stopPropagation();
+            const elId = el.dataset.id;
             if(el._timer && el._timer.interval) clearInterval(el._timer.interval);
             el.remove();
+            logMessage(`${type} (ID ${elId}) gelöscht`);
         });
 
         // timer setup (seat: 10min, bed: 30min)
@@ -120,39 +125,42 @@
         function tick(){
             if(!el._timer.running) return;
             el._timer.remaining = Math.max(0, el._timer.remaining - 1);
+            const elId = el.dataset.id;
             updateDisplay();
             if(el._timer.remaining <= 0){
                 el._timer.running = false;
                 if(el._timer.interval){ clearInterval(el._timer.interval); el._timer.interval = null; }
+                logMessage(`${type} (ID ${elId}) Timer abgelaufen!`);
             }
         }
 
         startBtn.addEventListener('click', function(e){
             e.stopPropagation();
+            const elId = el.dataset.id;
             if(el._timer.remaining <= 0){
-                // reset only, don't auto-start
                 el._timer.remaining = el._timer.duration;
                 el._timer.running = false;
+                
                 if(el._timer.interval){ clearInterval(el._timer.interval); el._timer.interval = null; }
                 updateDisplay();
+                logMessage(`${type} (ID ${elId}) Timer zurückgesetzt`);
                 return;
             }
             if(el._timer.running){
-                // pause
                 el._timer.running = false;
+                const elId = el.dataset.id;
                 if(el._timer.interval){ clearInterval(el._timer.interval); el._timer.interval = null; }
+                logMessage(`${type} (ID ${elId}) Timer pausiert`);
             } else {
-                // start
                 el._timer.running = true;
                 if(!el._timer.interval){ el._timer.interval = setInterval(tick, 1000); }
+                logMessage(`${type} (ID ${elId}) Timer gestartet`);
             }
             updateDisplay();
         });
 
-        // initialize display
         updateDisplay();
 
-        // initial position: near table center with small random offset
         const ws = workspace();
         ws.appendChild(el);
 
@@ -245,6 +253,15 @@
     // place seats approximately around the main #table element
     // opts: { top: number, right: number, bottom: number, left: number, distance: number, clearExisting: boolean }
     window.placeSeatsAroundTable = function(opts = {}){
+        if(defaultTableExecuted) {
+             const confirmAction = confirm("Möchten Sie die Standard-Tischanordnung wirklich ausführen?");
+            if (!confirmAction) {
+                return;
+            }
+        }else{
+            defaultTableExecuted = true;
+        }
+        logMessage("Standard-Tischanordnung wird gesetzt...");
         const cfg = Object.assign({ top:4, right:2, bottom:3, left:2, distance: 10, clearExisting: false }, opts);
         const ws = workspace();
         const tableEl = table();
@@ -317,6 +334,7 @@
         placeAlongRight(cfg.right);
         placeAlongBottom(cfg.bottom);
         placeAlongLeft(cfg.left);
+        logMessage("Standard-Tischanordnung abgeschlossen");
     };
 
     // place elements at fixed absolute offsets relative to the table top-left

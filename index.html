@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Sitzplatz Übersicht</title>
     <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 <div id="menu">
@@ -12,10 +13,31 @@
     <button onclick="placeSeatsAroundTable()">Standard Tisch</button>
 </div>
 
+<div id="log">
+    <h3>Log</h3>
+    <div id="logContent"></div>
+</div>
+
 <div id="workspace">
     <div id="table">Hier kann ein toller Text stehen...</div>
 </div>
-
+<script>
+window.addEventListener('beforeunload', function (e) {
+    e.preventDefault(); // Manche Browser brauchen das noch
+    e.returnValue = ''; // Wichtig, damit die Warnung erscheint
+});
+</script>
 <script src="app.js"></script>
+<script src="log.js"></script>
+
+<footer id="footer" style="margin-top:20px; padding:10px; text-align:center; font-size:0.9em; color:#555; border-top:1px solid #ccc;">
+    <p>
+        2025 Creator: Benjamin Keppler | Maintainer: Benjamin Keppler | Version: 1.0.1 | Lizenz: <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>
+    </p>
+    <p>
+        Kontakt: <a href="mailto: benjaaimnpekkler@gmail.com">benjaaimnpekkler@gmail.com</a> | Telefon: 01575 1120889
+    </p>
+</footer>
+
 </body>
 </html>
