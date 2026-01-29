@@ -68,7 +68,12 @@ Es ermöglicht das Hinzufügen, Bearbeiten, Verschieben und Verwalten von Stühl
 - Einfach die `index.html` im Browser öffnen (kein Server nötig)  
 - Alle Aktionen laufen komplett clientseitig  
 
-## Kontakt
-
+## Kontakt (Bei Feature-Ideen oder Bugs gerne kontaktieren)
 - **E-Mail:** [benjaaimnpekkler@gmail.com](mailto:benjaaimnpekkler@gmail.com)  
 - **Telefon:** 01575 1120889  
+
+## Ausblick
+- Herunterladbare Logs für lángere und zuverlässigere nachvollziehbarkein
+- Nicht Löschbare timer (nach dem Löschen eines Elements läuft der timer weiter, selbst wenn er gelöscht wurde.)
+- fron-/ backend trennung, für ausfallsicherheit persistentes logging und redundanz
+

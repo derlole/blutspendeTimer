@@ -3,7 +3,7 @@ var defaultTableExecuted = false;
 (function(){
     let seatCount = 0;
     const workspace = () => document.getElementById('workspace');
-    const table = () => document.getElementById('table');
+    const table = () => document.getElementById('table1');
 
     function createElement(type, opts){
         seatCount++;
