@@ -11,7 +11,7 @@ var defaultTableExecuted = false;
         el.className = 'element' + (type === 'bed' ? ' bed' : '');
         el.dataset.type = type;
         el.dataset.id = seatCount;
-        logMessage(`Erstellt: ${type} (ID ${seatCount})`);
+        logMessage(`Erstellt: ${type} (ID ${seatCount})`, "green");
 
         // label (editable)
         const label = document.createElement('div');
@@ -82,9 +82,27 @@ var defaultTableExecuted = false;
         delBtn.addEventListener('click', function(e){
             e.stopPropagation();
             const elId = el.dataset.id;
+            const remaining = el._timer ? el._timer.remaining : 0;
+
+            // formatTime-Funktion für Anzeige
+            function formatTime(s){
+                const mm = Math.floor(s/60).toString().padStart(2,'0');
+                const ss = Math.floor(s%60).toString().padStart(2,'0');
+                return `${mm}:${ss}`;
+            }
+
+            // Confirm mit Restzeit
+            const confirmDelete = confirm(`Möchten Sie dieses Element wirklich löschen?\nRestzeit: ${formatTime(remaining)}`);
+            if(!confirmDelete) return;
+
+            // Timer stoppen
             if(el._timer && el._timer.interval) clearInterval(el._timer.interval);
+
+            // Element entfernen
             el.remove();
-            logMessage(`${type} (ID ${elId}) gelöscht`);
+
+            // Log mit Restzeit
+            logMessage(`${type} (ID ${elId}) gelöscht | Restzeit: ${formatTime(remaining)}`, "red");
         });
 
         // timer setup (seat: 10min, bed: 30min)
@@ -106,19 +124,21 @@ var defaultTableExecuted = false;
 
         function updateDisplay(){
             el._timer.display.textContent = formatTime(el._timer.remaining);
-            if(el._timer.running){
-                el.classList.add('running');
-                el.classList.remove('alert');
-                startBtn.textContent = '⏸';
-            } else {
-                el.classList.remove('running');
-                el.classList.remove('alert');
-                startBtn.textContent = '▶';
-            }
+
+            // reset classes
+            el.classList.remove('running', 'alert', 'paused');
+
             if(el._timer.remaining <= 0){
-                el.classList.remove('running');
                 el.classList.add('alert');
                 startBtn.textContent = '🔁';
+            } else if(el._timer.running){
+                el.classList.add('running');
+                startBtn.textContent = '⏸';
+            } else if(el._timer.remaining < el._timer.duration){
+                el.classList.add('paused');
+                startBtn.textContent = '▶';
+            } else {
+                startBtn.textContent = '▶';
             }
         }
 
@@ -143,18 +163,18 @@ var defaultTableExecuted = false;
                 
                 if(el._timer.interval){ clearInterval(el._timer.interval); el._timer.interval = null; }
                 updateDisplay();
-                logMessage(`${type} (ID ${elId}) Timer zurückgesetzt`);
+                logMessage(`${type} (ID ${elId}) Timer zurückgesetzt`, "orange");
                 return;
             }
             if(el._timer.running){
                 el._timer.running = false;
                 const elId = el.dataset.id;
                 if(el._timer.interval){ clearInterval(el._timer.interval); el._timer.interval = null; }
-                logMessage(`${type} (ID ${elId}) Timer pausiert`);
+                logMessage(`${type} (ID ${elId}) Timer pausiert`, "orange");
             } else {
                 el._timer.running = true;
                 if(!el._timer.interval){ el._timer.interval = setInterval(tick, 1000); }
-                logMessage(`${type} (ID ${elId}) Timer gestartet`);
+                logMessage(`${type} (ID ${elId}) Timer gestartet`, "green");
             }
             updateDisplay();
         });

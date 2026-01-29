@@ -117,7 +117,9 @@ body {
     background: red;
     animation: blink 1s infinite;
 }
-
+.element.paused {
+    background: #ffa909;
+}
 .element button {
     font-size: 10px;
     margin-top: 2px;
