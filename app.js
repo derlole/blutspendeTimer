@@ -8,7 +8,20 @@ var defaultTableExecuted = false;
     function createElement(type, opts){
         seatCount++;
         const el = document.createElement('div');
-        el.className = 'element' + (type === 'bed' ? ' bed' : '');
+        if(type === 'bed'){
+            el.className = 'element bed';
+            const orientation = opts.orientation === 'horizontal' ? 'horizontal' : 'vertical';
+            el.dataset.orientation = orientation;
+            if(orientation === 'horizontal'){
+                el.style.width = '250px';
+                el.style.height = '100px';
+            } else {
+                el.style.width = '100px';
+                el.style.height = '250px';
+            }
+        } else {
+            el.className = 'element';
+        }
         el.dataset.type = type;
         el.dataset.id = seatCount;
         logMessage(`Erstellt: ${type} (ID ${seatCount})`, "green");
@@ -60,6 +73,48 @@ var defaultTableExecuted = false;
         timerDisplay.className = 'timer';
         timerDisplay.textContent = '';
         el.appendChild(timerDisplay);
+        timerDisplay.addEventListener('pointerdown', function(e){
+            e.stopPropagation();
+        });
+
+        // inline edit behavior for timer duration when not running
+        timerDisplay.addEventListener('click', function(e){
+            e.stopPropagation();
+            if(el._timer.running || el._editing) return;
+            el._editing = true;
+            const currentMinutes = Math.floor(el._timer.duration / 60);
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.min = '1';
+            input.step = '1';
+            input.className = 'timer-edit';
+            input.value = currentMinutes;
+            timerDisplay.textContent = '';
+            timerDisplay.appendChild(input);
+            input.focus();
+            input.select();
+
+            function finish(save){
+                const val = save ? Math.max(1, parseInt(input.value, 10) || 1) : currentMinutes;
+                const newDuration = val * 60;
+                el._timer.duration = newDuration;
+                if(!el._timer.running){
+                    el._timer.remaining = newDuration;
+                }
+                timerDisplay.removeChild(input);
+                el._editing = false;
+                updateDisplay();
+                logMessage(`${type} (ID ${el.dataset.id}) Dauer auf ${val} Minuten geändert`, "blue");
+            }
+
+            input.addEventListener('keydown', function(ev){
+                if(ev.key === 'Enter') finish(true);
+                else if(ev.key === 'Escape') finish(false);
+            });
+            input.addEventListener('blur', function(){ finish(true); });
+            // prevent the input from causing parent pointerdown drag
+            input.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); });
+        });
 
         // controls container
         const controls = document.createElement('div');
@@ -91,6 +146,16 @@ var defaultTableExecuted = false;
                 return `${mm}:${ss}`;
             }
 
+            // Wenn Timer pausiert ist, resetten anstatt löschen
+            if(el._timer && !el._timer.running && el._timer.remaining < el._timer.duration && el._timer.remaining > 0){
+                el._timer.remaining = el._timer.duration;
+                el._timer.running = false;
+                if(el._timer.interval){ clearInterval(el._timer.interval); el._timer.interval = null; }
+                updateDisplay();
+                logMessage(`${type} (ID ${elId}) Timer zurückgesetzt`, "orange");
+                return;
+            }
+
             // Confirm mit Restzeit
             const confirmDelete = confirm(`Möchten Sie dieses Element wirklich löschen?\nRestzeit: ${formatTime(remaining)}`);
             if(!confirmDelete) return;
@@ -106,7 +171,7 @@ var defaultTableExecuted = false;
         });
 
         // timer setup (seat: 10min, bed: 30min)
-        const duration = type === 'bed' ? 30 * 60 : 10 * 60; // seconds
+        const duration = opts.time * 60
         el._timer = {
             duration: duration,
             remaining: duration,
@@ -131,14 +196,30 @@ var defaultTableExecuted = false;
             if(el._timer.remaining <= 0){
                 el.classList.add('alert');
                 startBtn.textContent = '🔁';
+                delBtn.textContent = '✖';
+                delBtn.title = 'Löschen';
+                timerDisplay.style.cursor = 'default';
+                timerDisplay.title = '';
             } else if(el._timer.running){
                 el.classList.add('running');
                 startBtn.textContent = '⏸';
+                delBtn.textContent = '✖';
+                delBtn.title = 'Löschen';
+                timerDisplay.style.cursor = 'default';
+                timerDisplay.title = '';
             } else if(el._timer.remaining < el._timer.duration){
                 el.classList.add('paused');
                 startBtn.textContent = '▶';
+                delBtn.textContent = '🔄';
+                delBtn.title = 'Reset';
+                timerDisplay.style.cursor = 'pointer';
+                timerDisplay.title = 'Klicken zum Bearbeiten der Dauer';
             } else {
                 startBtn.textContent = '▶';
+                delBtn.textContent = '✖';
+                delBtn.title = 'Löschen';
+                timerDisplay.style.cursor = 'pointer';
+                timerDisplay.title = 'Klicken zum Bearbeiten der Dauer';
             }
         }
 
@@ -218,6 +299,75 @@ var defaultTableExecuted = false;
     let active = null;
     let startX = 0, startY = 0, elStartX = 0, elStartY = 0;
 
+    let tableActive = false;
+    let tableStartX = 0, tableStartY = 0, tableOriginX = 0, tableOriginY = 0;
+
+    function initTablePosition(){
+        const t = table();
+        const ws = workspace();
+        if(!t || !ws) return;
+        const rect = t.getBoundingClientRect();
+        const wsRect = ws.getBoundingClientRect();
+        t.style.left = `${rect.left - wsRect.left}px`;
+        t.style.top = `${rect.top - wsRect.top}px`;
+        t.style.transform = 'none';
+        t.style.touchAction = 'auto';
+        t.addEventListener('pointerdown', onTablePointerDown);
+    }
+
+    function onTablePointerDown(e){
+        if(e.button !== 0) return;
+        if(e.target.closest('button') || e.target.tagName === 'INPUT') return;
+        const t = table();
+        if(!t) return;
+        const offsetX = e.offsetX;
+        const offsetY = e.offsetY;
+        const handleSize = 18;
+        if(offsetX > t.clientWidth - handleSize && offsetY > t.clientHeight - handleSize){
+            return;
+        }
+        e.preventDefault();
+        tableActive = true;
+        t.setPointerCapture(e.pointerId);
+        t.classList.add('dragging');
+        const rect = t.getBoundingClientRect();
+        const wsRect = workspace().getBoundingClientRect();
+        tableStartX = e.clientX;
+        tableStartY = e.clientY;
+        tableOriginX = rect.left - wsRect.left;
+        tableOriginY = rect.top - wsRect.top;
+        t.addEventListener('pointermove', onTablePointerMove);
+        t.addEventListener('pointerup', onTablePointerUp);
+        t.addEventListener('pointercancel', onTablePointerUp);
+    }
+
+    function onTablePointerMove(e){
+        if(!tableActive) return;
+        const t = table();
+        const ws = workspace();
+        if(!t || !ws) return;
+        const dx = e.clientX - tableStartX;
+        const dy = e.clientY - tableStartY;
+        const wsRect = ws.getBoundingClientRect();
+        const nx = Math.max(0, Math.min(tableOriginX + dx, wsRect.width - t.offsetWidth));
+        const ny = Math.max(0, Math.min(tableOriginY + dy, wsRect.height - t.offsetHeight));
+        t.style.left = `${nx}px`;
+        t.style.top = `${ny}px`;
+        t.style.transform = 'none';
+    }
+
+    function onTablePointerUp(e){
+        if(!tableActive) return;
+        tableActive = false;
+        const t = table();
+        if(!t) return;
+        t.classList.remove('dragging');
+        try{ t.releasePointerCapture(e.pointerId); } catch(_){ }
+        t.removeEventListener('pointermove', onTablePointerMove);
+        t.removeEventListener('pointerup', onTablePointerUp);
+        t.removeEventListener('pointercancel', onTablePointerUp);
+    }
+
     function onPointerDown(e){
         // only start dragging if not clicking the internal button or editing
         if(e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
@@ -266,9 +416,132 @@ var defaultTableExecuted = false;
         active = null;
     }
 
+    initTablePosition();
+
+    function createCustomElementDialog(type){
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-dialog-overlay';
+
+        const defaultTime = type === 'bed' ? 30 : 10;
+        overlay.innerHTML = `
+            <div class="custom-dialog-panel">
+                <h2>Neue ${type === 'bed' ? 'Liege' : 'Stuhl'} hinzufügen</h2>
+                <label>
+                    Zeit in Minuten
+                    <input id="customTimeInput" type="number" min="1" step="1" value="${defaultTime}">
+                </label>
+                ${type === 'bed' ? `
+                <div class="orientation-group">
+                    <button type="button" class="orientation-btn selected" data-orientation="vertical">Vertikal</button>
+                    <button type="button" class="orientation-btn" data-orientation="horizontal">Horizontal</button>
+                </div>
+                ` : ''}
+                <div class="dialog-buttons">
+                    <button type="button" class="cancel-btn">Abbrechen</button>
+                    <button type="button" class="commit-btn">Erstellen</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        const timeInput = overlay.querySelector('#customTimeInput');
+        const cancelBtn = overlay.querySelector('.cancel-btn');
+        const commitBtn = overlay.querySelector('.commit-btn');
+        const orientationButtons = overlay.querySelectorAll('.orientation-btn');
+        let selectedOrientation = 'vertical';
+
+        function closeDialog(){
+            overlay.remove();
+        }
+
+        if(orientationButtons.length){
+            orientationButtons.forEach(btn => {
+                btn.addEventListener('click', function(){
+                    orientationButtons.forEach(other => other.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedOrientation = this.dataset.orientation;
+                });
+            });
+        }
+
+        cancelBtn.addEventListener('click', function(){
+            closeDialog();
+        });
+
+        commitBtn.addEventListener('click', function(){
+            const minutes = Math.max(1, parseInt(timeInput.value, 10) || defaultTime);
+            const opts = { time: minutes };
+            if(type === 'bed') opts.orientation = selectedOrientation;
+            createElement(type, opts);
+            closeDialog();
+        });
+
+        overlay.addEventListener('click', function(event){
+            if(event.target === overlay){
+                closeDialog();
+            }
+        });
+
+        timeInput.focus();
+        timeInput.select();
+    }
+
     // export globals used by index.html
-    window.addSeat = function(){ createElement('seat'); };
-    window.addBed = function(){ createElement('bed'); };
+    window.addCustomSeat = function(){ createCustomElementDialog('seat'); };
+    window.addCustomBed = function(){ createCustomElementDialog('bed'); };
+    window.openSeatCountDialog = function(){ createSeatCountDialog(); };
+    window.addSeat = function(){ createElement('seat', {time: 10}); };
+    window.addBed = function(){ createElement('bed', {time: 30}); };
+
+    function createSeatCountDialog(){
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-dialog-overlay';
+        overlay.innerHTML = `
+            <div class="custom-dialog-panel">
+                <h2>Sitzplatz-Verteilung</h2>
+                <p>Gib ein, wie viele Stühle pro Tischseite platziert werden sollen.</p>
+                <div class="seat-config-grid">
+                    <div class="seat-config-row">
+                        <label>Oben<input id="topCount" type="number" min="0" step="1" value="4"></label>
+                    </div>
+                    <div class="seat-config-row">
+                        <label>Links<input id="leftCount" type="number" min="0" step="1" value="2"></label>
+                        <div class="mini-table"></div>
+                        <label>Rechts<input id="rightCount" type="number" min="0" step="1" value="2"></label>
+                    </div>
+                    <div class="seat-config-row">
+                        <label>Unten<input id="bottomCount" type="number" min="0" step="1" value="3"></label>
+                    </div>
+                </div>
+                <div class="dialog-buttons">
+                    <button type="button" class="cancel-btn">Abbrechen</button>
+                    <button type="button" class="commit-btn">Platzieren</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        const topInput = overlay.querySelector('#topCount');
+        const rightInput = overlay.querySelector('#rightCount');
+        const bottomInput = overlay.querySelector('#bottomCount');
+        const leftInput = overlay.querySelector('#leftCount');
+        const cancelBtn = overlay.querySelector('.cancel-btn');
+        const commitBtn = overlay.querySelector('.commit-btn');
+
+        function closeDialog(){ overlay.remove(); }
+
+        cancelBtn.addEventListener('click', closeDialog);
+        commitBtn.addEventListener('click', function(){
+            const top = Math.max(0, parseInt(topInput.value, 10) || 0);
+            const right = Math.max(0, parseInt(rightInput.value, 10) || 0);
+            const bottom = Math.max(0, parseInt(bottomInput.value, 10) || 0);
+            const left = Math.max(0, parseInt(leftInput.value, 10) || 0);
+            placeSeatsAroundTable({ top, right, bottom, left, confirm: false });
+            closeDialog();
+        });
+
+        topInput.focus();
+    }
 
     // place seats approximately around the main #table element
     // opts: { top: number, right: number, bottom: number, left: number, distance: number, clearExisting: boolean }
@@ -309,7 +582,7 @@ var defaultTableExecuted = false;
                 const xTable = tRect.left + gap * (i + 1) + seatW * i + seatW / 2; // center x in page coords
                 const x = Math.round(xTable - seatW/2 - wsRect.left);
                 const y = Math.round(tRect.top - wsRect.top - cfg.distance - seatH);
-                createElement('seat', { x: x, y: y });
+                createElement('seat', { x: x, y: y, time: 10 });
             }
         }
 
@@ -321,7 +594,7 @@ var defaultTableExecuted = false;
                 const xTable = tRect.left + gap * (i + 1) + seatW * i + seatW / 2;
                 const x = Math.round(xTable - seatW/2 - wsRect.left);
                 const y = Math.round(tRect.bottom - wsRect.top + cfg.distance);
-                createElement('seat', { x: x, y: y });
+                createElement('seat', { x: x, y: y, time: 10 });
             }
         }
 
@@ -333,7 +606,7 @@ var defaultTableExecuted = false;
                 const yTable = tRect.top + gap * (i + 1) + seatH * i + seatH / 2;
                 const x = Math.round(tRect.left - wsRect.left - cfg.distance - seatW);
                 const y = Math.round(yTable - seatH/2 - wsRect.top);
-                createElement('seat', { x: x, y: y });
+                createElement('seat', { x: x, y: y, time: 10 });
             }
         }
 
@@ -345,7 +618,7 @@ var defaultTableExecuted = false;
                 const yTable = tRect.top + gap * (i + 1) + seatH * i + seatH / 2;
                 const x = Math.round(tRect.right - wsRect.left + cfg.distance);
                 const y = Math.round(yTable - seatH/2 - wsRect.top);
-                createElement('seat', { x: x, y: y });
+                createElement('seat', { x: x, y: y, time: 10 });
             }
         }
 
@@ -354,7 +627,7 @@ var defaultTableExecuted = false;
         placeAlongRight(cfg.right);
         placeAlongBottom(cfg.bottom);
         placeAlongLeft(cfg.left);
-        logMessage("Standard-Tischanordnung abgeschlossen");
+        logMessage("Tischanordnung abgeschlossen");
     };
 
     // place elements at fixed absolute offsets relative to the table top-left

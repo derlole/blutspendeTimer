@@ -1,0 +1,308 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background: #2c2c2c;
+    color: #f0f0f0;
+    line-height: 1.6;
+}
+
+header {
+    background: linear-gradient(45deg, #5a99ff, #3da26f);
+    padding: 30px;
+    text-align: center;
+    color: white;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+header p {
+    margin: 10px 0 0 0;
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+#tutorial-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.tutorial-section {
+    background: #3a3a3a;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.tutorial-section h2 {
+    color: #5a99ff;
+    margin-top: 0;
+    border-bottom: 2px solid #5a99ff;
+    padding-bottom: 10px;
+}
+
+.demo-controls {
+    margin: 15px 0;
+}
+
+.demo-controls button {
+    background: #5a99ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 1rem;
+}
+
+.demo-controls button:hover {
+    background: #4a89e8;
+}
+
+.demo-workspace {
+    position: relative;
+    height: 300px;
+    background: #444;
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.demo-table {
+    position: absolute;
+    width: 200px;
+    height: 150px;
+    background: #666;
+    border-radius: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #fff;
+    cursor: grab;
+}
+
+.demo-table.resizable {
+    resize: both;
+    overflow: hidden;
+}
+
+.demo-table.resizable:active {
+    cursor: grabbing;
+}
+
+.demo-element {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: #aaa;
+    border-radius: 6px;
+    cursor: grab;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    font-size: 0.8rem;
+}
+
+.demo-element.bed {
+    width: 80px;
+    height: 200px;
+}
+
+.demo-element .demo-label {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.demo-element .demo-timer {
+    font-size: 0.7rem;
+    background: rgba(255,255,255,0.8);
+    padding: 2px 6px;
+    border-radius: 8px;
+    color: #222;
+    cursor: pointer;
+}
+
+.demo-element .demo-controls {
+    display: flex;
+    gap: 4px;
+    margin-top: 5px;
+}
+
+.demo-element .demo-controls button {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.tutorial-tip {
+    background: #2a4a2a;
+    border-left: 4px solid #3da26f;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 4px;
+}
+
+.tutorial-tip strong {
+    color: #3da26f;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    background: #222;
+}
+
+.back-btn {
+    background: #666;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.back-btn:hover {
+    background: #777;
+}
+
+/* Dialog Styles */
+.demo-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.demo-dialog-panel {
+    background: #262626;
+    border: 1px solid #555;
+    border-radius: 14px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    padding: 24px;
+    width: min(360px, 90%);
+    color: #f0f0f0;
+}
+
+.demo-dialog-panel h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 1.2rem;
+}
+
+.demo-dialog-panel label {
+    display: block;
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+}
+
+.demo-dialog-panel input[type="number"] {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background: #1d1d1d;
+    color: #fff;
+}
+
+.seat-config-grid {
+    display: grid;
+    gap: 14px;
+}
+
+.seat-config-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.seat-config-row label {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.95rem;
+    gap: 6px;
+}
+
+.seat-config-row input[type="number"] {
+    width: 72px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background: #1d1d1d;
+    color: #fff;
+    text-align: center;
+}
+
+.mini-table {
+    width: 80px;
+    height: 60px;
+    border: 2px solid #777;
+    border-radius: 8px;
+    position: relative;
+    display: grid;
+    place-items: center;
+    color: #ddd;
+    font-size: 0.8rem;
+    background: #2f2f2f;
+}
+
+.mini-table::before {
+    content: 'Tisch';
+    position: absolute;
+    font-size: 0.7rem;
+    color: #bbb;
+}
+
+.dialog-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.commit-btn, .cancel-btn {
+    min-width: 100px;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.commit-btn {
+    background: #2e8b57;
+    color: #fff;
+}
+
+.cancel-btn {
+    background: #444;
+    color: #ddd;
+}
+
+.commit-btn:hover {
+    background: #3da26f;
+}
+
+.cancel-btn:hover {
+    background: #555;
+}

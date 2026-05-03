@@ -68,7 +68,14 @@ body {
     text-align: center;
     line-height: 30px;
     font-weight: bold;
-    pointer-events: none;
+    pointer-events: auto;
+    resize: both;
+    overflow: hidden;
+    cursor: grab;
+}
+
+#table1.dragging {
+    cursor: grabbing;
 }
 #table2 {
     position: absolute;
@@ -153,6 +160,15 @@ body {
     border-radius: 4px;
     border: 1px solid #888;
     width: 80px;
+}
+
+.element .timer-edit {
+    font-size: 12px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    border: 1px solid #888;
+    width: 60px;
+    text-align: center;
 }
 
 .element .controls {
@@ -254,6 +270,156 @@ body {
 #logContent {
     flex: 1 1 auto;      /* Nimmt verbleibenden Platz ein */
     overflow-y: auto;    /* Scrollen aktivieren */
+}
+
+.custom-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.custom-dialog-panel {
+    background: #262626;
+    border: 1px solid #555;
+    border-radius: 14px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    padding: 24px;
+    width: min(360px, 100%);
+    color: #f0f0f0;
+}
+
+.custom-dialog-panel h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 1.2rem;
+}
+
+.custom-dialog-panel label {
+    display: block;
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+}
+
+.custom-dialog-panel input[type="number"] {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background: #1d1d1d;
+    color: #fff;
+}
+
+.orientation-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.orientation-btn {
+    flex: 1;
+    border: 1px solid #555;
+    border-radius: 10px;
+    background: #333;
+    color: #ddd;
+    padding: 10px 12px;
+    cursor: pointer;
+}
+
+.orientation-btn.selected {
+    background: #5a99ff;
+    border-color: #3580ff;
+    color: #fff;
+}
+
+.dialog-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.commit-btn,
+.cancel-btn {
+    min-width: 120px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.commit-btn {
+    background: #2e8b57;
+    color: #fff;
+}
+
+.cancel-btn {
+    background: #444;
+    color: #ddd;
+}
+
+.commit-btn:hover {
+    background: #3da26f;
+}
+
+.cancel-btn:hover {
+    background: #555;
+}
+
+.seat-config-grid {
+    display: grid;
+    gap: 14px;
+}
+
+.seat-config-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.seat-config-row label {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.95rem;
+    gap: 6px;
+}
+
+.seat-config-row input[type="number"] {
+    width: 72px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background: #1d1d1d;
+    color: #fff;
+    text-align: center;
+}
+
+.mini-table {
+    width: 120px;
+    height: 100px;
+    border: 2px solid #777;
+    border-radius: 14px;
+    position: relative;
+    display: grid;
+    place-items: center;
+    color: #ddd;
+    font-size: 0.95rem;
+    background: #2f2f2f;
+}
+
+.mini-table::before {
+    content: 'Tisch';
+    position: absolute;
+    font-size: 0.85rem;
+    color: #bbb;
 }
 
 

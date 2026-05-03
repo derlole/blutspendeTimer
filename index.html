@@ -8,9 +8,12 @@
 </head>
 <body>
 <div id="menu">
-    <button onclick="addSeat()">➕ Stuhl</button>
-    <button onclick="addBed()">➕ Liege</button>
-    <button onclick="placeSeatsAroundTable()">Standard Tisch</button>
+    <button onclick="addSeat()">➕ Stuhl standard</button>
+    <button onclick="addBed()">➕ Liege standard</button>
+    <button onclick="addCustomSeat()">➕ Stuhl generisch</button>
+    <button onclick="addCustomBed()">➕ Liege generisch</button>
+    <button onclick="placeSeatsAroundTable()">Tisch standard</button>
+    <button onclick="openSeatCountDialog()">Tisch generisch</button>
 </div>
 
 <div id="log">
@@ -69,12 +72,17 @@ window.addEventListener('beforeunload', function (e) {
 
 <footer id="footer" style="margin-top:20px; padding:10px; text-align:center; font-size:0.9em; color:#555; border-top:1px solid #ccc;">
     <p>
-        2025 Creator: Benjamin Keppler | Maintainer: Benjamin Keppler | Version: 1.0.1 | Lizenz: <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>
+        2025 Creator: Benjamin Keppler | Maintainer: Benjamin Keppler | Version: 1.1.1 | Lizenz: <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>
     </p>
     <p>
         Kontakt: <a href="mailto: benjaaimnpekkler@gmail.com">benjaaimnpekkler@gmail.com</a> | Telefon: 01575 1120889
     </p>
 </footer>
+
+<!-- Tutorial Button -->
+<div id="tutorial-button" onclick="window.open('tutorial.html', '_blank')" style="position: fixed; bottom: 20px; right: 20px; background: linear-gradient(45deg, #5a99ff, #3da26f); color: white; padding: 15px 25px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 10000; border: none;">
+    🎓 Tutorial
+</div>
 
 </body>
 </html>

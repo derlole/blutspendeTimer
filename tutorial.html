@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Tutorial - Blutspende Timer</title>
+    <link rel="stylesheet" href="tutorial.css">
+</head>
+<body>
+    <header>
+        <h1>🎓 Tutorial - Blutspende Timer</h1>
+        <p>Interaktive Einführung in alle Features. Probiere alles aus!</p>
+    </header>
+
+    <div id="tutorial-content">
+        <section id="section-1" class="tutorial-section">
+            <h2>1. Elemente hinzufügen</h2>
+            <p>Klicke auf die Buttons, um Stühle und Liegen hinzuzufügen:</p>
+            <div class="demo-controls">
+                <button onclick="addDemoSeat()">➕ Stuhl hinzufügen</button>
+                <button onclick="addDemoBed()">➕ Liege hinzufügen</button>
+            </div>
+            <div class="demo-workspace" id="demo-workspace-1">
+                <div class="demo-table">Tisch</div>
+            </div>
+            <div class="tutorial-tip">
+                💡 <strong>Tipp:</strong> Elemente können per Drag & Drop verschoben werden.
+            </div>
+        </section>
+
+        <section id="section-2" class="tutorial-section">
+            <h2>2. Timer bearbeiten</h2>
+            <p>Klicke auf die Zeit-Anzeige bei einem Element, um die Dauer zu ändern:</p>
+            <div class="demo-workspace" id="demo-workspace-2">
+                <div class="demo-table">Tisch</div>
+            </div>
+            <div class="tutorial-tip">
+                💡 <strong>Tipp:</strong> Die Zeit kann nur bearbeitet werden, wenn der Timer nicht läuft.
+            </div>
+        </section>
+
+        <section id="section-3" class="tutorial-section">
+            <h2>3. Timer steuern</h2>
+            <p>Verwende ▶ zum Starten, ⏸ zum Pausieren und 🔄 zum Zurücksetzen:</p>
+            <div class="demo-workspace" id="demo-workspace-3">
+                <div class="demo-table">Tisch</div>
+            </div>
+            <div class="tutorial-tip">
+                💡 <strong>Tipp:</strong> Wenn der Timer pausiert ist, wird der Delete-Button zu einem Reset-Button.
+            </div>
+        </section>
+
+        <section id="section-4" class="tutorial-section">
+            <h2>4. Tisch konfigurieren</h2>
+            <p>Der Tisch kann verschoben und in der Größe verändert werden:</p>
+            <div class="demo-workspace" id="demo-workspace-4">
+                <div id="demo-table-4" class="demo-table resizable">Tisch</div>
+            </div>
+            <div class="tutorial-tip">
+                💡 <strong>Tipp:</strong> Ziehe den Tisch, um ihn zu verschieben. Ziehe an der Ecke, um die Größe zu ändern.
+            </div>
+        </section>
+
+        <section id="section-5" class="tutorial-section">
+            <h2>5. Generische Platzierung</h2>
+            <p>Verwende den Konfigurationsdialog für benutzerdefinierte Sitzverteilung:</p>
+            <div class="demo-controls">
+                <button onclick="openDemoSeatDialog()">Tisch konfigurieren</button>
+            </div>
+            <div class="demo-workspace" id="demo-workspace-5">
+                <div class="demo-table">Tisch</div>
+            </div>
+            <div class="tutorial-tip">
+                💡 <strong>Tipp:</strong> Gib ein, wie viele Stühle pro Seite platziert werden sollen.
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <button onclick="window.close()" class="back-btn">Zurück zur Hauptseite</button>
+    </footer>
+
+    <script src="tutorial.js"></script>
+</body>
+</html>
